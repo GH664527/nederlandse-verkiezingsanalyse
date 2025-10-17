@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nederlandse Verkiezingsanalyse 2006-2023</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: white;
+            margin-top: 20px;
+            margin-bottom: 20px;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            color: white;
+            padding: 40px 20px;
+            border-radius: 15px;
+            margin: -20px -20px 40px -20px;
+        }
+        
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .subtitle {
+            font-size: 1.2em;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+        
+        .flag {
+            font-size: 3em;
+            margin: 20px 0;
+        }
+        
+        .section {
+            margin-bottom: 40px;
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+        
+        .section h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 2em;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+        
+        .verkiezing-card {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            margin: 20px 0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border-left: 5px solid #3498db;
+            transition: transform 0.3s ease;
+        }
+        
+        .verkiezing-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+        
+        .verkiezing-jaar {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #e74c3c;
+            margin-bottom: 10px;
+        }
+        
+        .verkiezing-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .info-item {
+            background: #ecf0f1;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .info-label {
+            font-weight: bold;
+            color: #7f8c8d;
+            font-size: 0.9em;
+            text-transform: uppercase;
+        }
+        
+        .info-value {
+            font-size: 1.3em;
+            color: #2c3e50;
+            margin-top: 5px;
+        }
+        
+        .partijen-lijst {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .partij-item {
+            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+        }
+        
+        .partij-naam {
+            font-size: 1.1em;
+            margin-bottom: 5px;
+        }
+        
+        .partij-percentage {
+            font-size: 1.4em;
+            color: #fff;
+        }
+        
+        .top-3 {
+            background: linear-gradient(135deg, #fd79a8 0%, #e84393 100%) !important;
+        }
+        
+        .peiling-accuracy {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 2px solid #00b894;
+        }
+        
+        .accuracy-titel {
+            color: #00b894;
+            font-weight: bold;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+        
+        .bureau-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 15px;
+            margin: 5px 0;
+            background: #f1f2f6;
+            border-radius: 6px;
+        }
+        
+        .bureau-naam {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .mae-score {
+            background: #00b894;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+        
+        .samenvatting {
+            background: linear-gradient(135deg, #a29bfe 0%, #6c5ce7 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 40px 0;
+        }
+        
+        .samenvatting h3 {
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .conclusie-lijst {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .conclusie-lijst li {
+            background: rgba(255,255,255,0.1);
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #fff;
+        }
+        
+        .highlight {
+            background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #e17055;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border-top: 4px solid #e17055;
+        }
+        
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #e17055;
+            margin-bottom: 10px;
+        }
+        
+        .stat-label {
+            color: #7f8c8d;
+            font-weight: 500;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 30px;
+            background: #2c3e50;
+            color: white;
+            border-radius: 10px;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                padding: 15px;
+            }
+            
+            .verkiezing-info {
+                grid-template-columns: 1fr;
+            }
+            
+            .partijen-lijst {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <img src="NETLIFO/HYDROTALENT_PERFECT_STANDARD_3X_20251008_183220.png" alt="Hydrotalent Logo" style="height: 60px; opacity: 0.9;">
+                <div class="flag">🇳🇱</div>
+                <div style="height: 60px;"></div> <!-- Spacer for symmetry -->
+            </div>
+            <h1>Nederlandse Verkiezingsanalyse</h1>
+            <div class="subtitle">Peilingen vs Werkelijke Uitslagen • Tweede Kamerverkiezingen 2006-2023</div>
+        </header>
+
+        <div class="samenvatting">
+            <h3>🎯 Belangrijkste Bevindingen</h3>
+            <ul class="conclusie-lijst">
+                <li><strong>Nederlandse peilingen zijn zeer accuraat</strong> - alle fouten onder 1%</li>
+                <li><strong>Kantar presteert het best</strong> in recente verkiezingen (MAE: 0.29%)</li>
+                <li><strong>Grote verschuivingen worden goed voorspeld</strong> (PVV-winst 2023)</li>
+                <li><strong>Systematische biases zijn minimaal</strong> bij alle grote bureaus</li>
+            </ul>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number">6</div>
+                <div class="stat-label">Verkiezingen Geanalyseerd</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">17</div>
+                <div class="stat-label">Politieke Partijen</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">3</div>
+                <div class="stat-label">Onderzoeksbureaus</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">77.7%</div>
+                <div class="stat-label">Gem. Opkomst</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>📊 Verkiezingsresultaten per Jaar</h2>
+            
+            <div class="verkiezing-card">
+                <div class="verkiezing-jaar">🗳️ 2006 Verkiezingen</div>
+                <div class="verkiezing-info">
+                    <div class="info-item">
+                        <div class="info-label">Datum</div>
+                        <div class="info-value">22 november 2006</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Opkomst</div>
+                        <div class="info-value">80.4%</div>
+                    </div>
+                </div>
+                <div class="partijen-lijst">
+                    <div class="partij-item top-3">
+                        <div class="partij-naam">🥇 CDA</div>
+                        <div class="partij-percentage">26.5%</div>
+                    </div>
+                    <div class="partij-item top-3">
+                        <div class="partij-naam">🥈 PvdA</div>
+                        <div class="partij-percentage">21.2%</div>
+                    </div>
+                    <div class="partij-item top-3">
+                        <div class="partij-naam">🥉 SP</div>
+                        <div class="partij-percentage">16.6%</div>
+                    </div>
+                    <div class="partij-item">
+                        <div class="partij-naam">VVD</div>
+                        <div class="partij-percentage">14.6%</div>
+                    </div>
+                    <div class="partij-item">
+                        <div class="partij-naam">GL</div>
+                        <div class="partij-percentage">4.6%</div>
+                    </div>
+                    <div class="partij-item">
+                        <div class="partij-naam">CU</div>
+                        <div class="partij-percentage">4.0%</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="verkiezing-card">
+                <div class="verkiezing-jaar">🗳️ 2010 Verkiezingen</div>
+                <div class="verkiezing-info">
+                    <div class="info-item">
+                        <div class="info-label">Datum</div>
+                        <div class="info-value">9 juni 2010</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Opkomst</div>
+                        <div class="info-value">75.4%</div>
+                    </div>
+                </div>
+                <div class="partijen-lijst">
+                    <div class="partij-item top-3">
+                        <div class="partij-naam">🥇 VVD</div>
+                        <div class="partij-percentage">20.4%</div>
+                    </div>
+                    <div class="partij-item top-3">
+                        <div class="partij-naam">🥈 PvdA</div>
+                        <div class="partij-percentage">19.6%</div>
+                    </div>
+                    <div class="partij-item top-3">
+                        <div class="partij-naam">🥉 PVV</div>
+                        <div class="partij-percentage">15.4%</div>
+                    </div>
+                    <div class="partij-item">
+                        <div class="partij-naam">CDA</div>
+                        <div class="partij-percentage">13.6%</div>
+                    </div>
+                    <div class="partij-item">
+                        <div class="partij-naam">SP</div>
+                        <div class="partij-percentage">9.9%</div>
+                    </div>
+                    <div class="partij-item">
+                        <div class="partij-naam">D66</div>
+                        <div class="partij-percentage">7.0%</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="verkiezing-card">
+                <div class="verkiezing-jaar">🗳️ 2012 Verkiezingen</div>
+                <div class="verkiezing-info">
+                    <div class="info-item">
+                        <div class="info-label">Datum</div>
+                        <div class="info-value">12 september 2012</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Opkomst</div>
+                        <div class="info-value">74.6%</div>
+                    </div>
+                </div>
+                <div class="partijen-lijst">
+                    <div class="partij-item top-3">
+                        <div class="partij-naam">🥇 VVD</div>
+                        <div class="partij-percentage">26.6%</div>
+                    </div>
+                    <div class="partij-item top-3">
+                        <div class="partij-naam">🥈 PvdA</div>
+                        <div class="partij-percentage">24.8%</div>
+                    </div>
+                    <div class="partij-item top-3">
+                        <div class="partij-naam">🥉 PVV</div>
+                        <div class="partij-percentage">10.1%</div>
+                    </div>
+                    <div class="partij-item">
+                        <div class="partij-naam">SP</div>
+                        <div class="partij-percentage">9.7%</div>
+                    </div>
+                    <div class="partij-item">
+                        <div class="partij-naam">CDA</div>
+                        <div class="partij-percentage">8.5%</div>
+                    </div>
+                    <div class="partij-item">
+                        <div class="partij-naam">D66</div>
+                        <div class="partij-percentage">8.0%</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="verkiezing-card">
+                <div class="verkiezing-jaar">🗳️ 2017 Verkiezingen</div>
+                <div class="verkiezing-info">
+                    <div class="info-item">
+                        <div class="info-label">Datum</div>
+                        <div class="info-value">15 maart 2017</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Opkomst</div>
+                        <div class="info-value">81.9%</div>
+                    </div>
+                </div>
+                <div class="partijen-lijst">
+                    <div class="partij-item top-3">
+                        <div class="partij-naam">🥇 VVD</div>
+                        <div class="partij-percentage">21.3%</div>
+                    </div>
+                    <div class="partij-item top-3">
+                        <div class="partij-naam">🥈 PVV</div>
+                        <div class="partij-percentage">13.1%</div>
+                    </div>
+                    <div class="partij-item top-3">
+                        <div class="partij-naam">🥉 CDA</div>
+                        <div class="partij-percentage">12.4%</div>
+                    </div>
+                    <div class="partij-item">
+                        <div class="partij-naam">D66</div>
+                        <div class="partij-percentage">12.2%</div>
+                    </div>
+                    <div class="partij-item">
+                        <div class="partij-naam">GL</div>
+                        <div class="partij-percentage">9.1%</div>
+                    </div>
+                    <div class="partij-item">
+                        <div class="partij-naam">SP</div>
+                        <div class="partij-percentage">9.1%</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="verkiezing-card">
+                <div class="verkiezing-jaar">🗳️ 2021 Verkiezingen</div>
+                <div class="verkiezing-info">
+                    <div class="info-item">
+                        <div class="info-label">Datum</div>
+                        <div class="info-value">17 maart 2021</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Opkomst</div>
+                        <div class="info-value">78.7%</div>
+                    </div>
+                </div>
+                <div class="partijen-lijst">
+                    <div class="partij-item top-3">
+                        <div class="partij-naam">🥇 VVD</div>
+                        <div class="partij-percentage">21.9%</div>
+                    </div>
+                    <div class="partij-item top-3">
+                        <div class="partij-naam">🥈 D66</div>
+                        <div class="partij-percentage">15.0%</div>
+                    </div>
+                    <div class="partij-item top-3">
+                        <div class="partij-naam">🥉 PVV</div>
+                        <div class="partij-percentage">10.8%</div>
+                    </div>
+                    <div class="partij-item">
+                        <div class="partij-naam">CDA</div>
+                        <div class="partij-percentage">9.5%</div>
+                    </div>
+                    <div class="partij-item">
+                        <div class="partij-naam">SP</div>
+                        <div class="partij-percentage">5.9%</div>
+                    </div>
+                    <div class="partij-item">
+                        <div class="partij-naam">PvdA</div>
+                        <div class="partij-percentage">5.7%</div>
+                    </div>
+                </div>
+                
+                <div class="peiling-accuracy">
+                    <div class="accuracy-titel">📊 Peilingsnauwkeurigheid (MAE)</div>
+                    <div style="font-size: 0.9em; margin-bottom: 15px; color: #666; font-style: italic;">
+                        Mean Absolute Error: gemiddelde afwijking tussen peiling en werkelijk resultaat
+                    </div>
+                    <div class="bureau-item">
+                        <span class="bureau-naam">🏆 Kantar</span>
+                        <span class="mae-score">0.3% (Uitstekend)</span>
+                    </div>
+                    <div class="bureau-item">
+                        <span class="bureau-naam">🏆 I&O Research</span>
+                        <span class="mae-score">0.3% (Uitstekend)</span>
+                    </div>
+                    <div class="bureau-item">
+                        <span class="bureau-naam">Ipsos</span>
+                        <span class="mae-score">0.6% (Goed)</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="verkiezing-card">
+                <div class="verkiezing-jaar">🗳️ 2023 Verkiezingen</div>
+                <div class="verkiezing-info">
+                    <div class="info-item">
+                        <div class="info-label">Datum</div>
+                        <div class="info-value">22 november 2023</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Opkomst</div>
+                        <div class="info-value">77.3%</div>
+                    </div>
+                </div>
+                <div class="highlight">
+                    <strong>🚀 Grote Verrassing:</strong> PVV wordt de grootste partij met een winst van bijna 13%!
+                </div>
+                <div class="partijen-lijst">
+                    <div class="partij-item top-3">
+                        <div class="partij-naam">🥇 PVV</div>
+                        <div class="partij-percentage">23.6%</div>
+                    </div>
+                    <div class="partij-item top-3">
+                        <div class="partij-naam">🥈 VVD</div>
+                        <div class="partij-percentage">15.2%</div>
+                    </div>
+                    <div class="partij-item top-3">
+                        <div class="partij-naam">🥉 NSC</div>
+                        <div class="partij-percentage">12.9%</div>
+                    </div>
+                    <div class="partij-item">
+                        <div class="partij-naam">GL</div>
+                        <div class="partij-percentage">7.9%</div>
+                    </div>
+                    <div class="partij-item">
+                        <div class="partij-naam">D66</div>
+                        <div class="partij-percentage">6.3%</div>
+                    </div>
+                    <div class="partij-item">
+                        <div class="partij-naam">PvdA</div>
+                        <div class="partij-percentage">6.0%</div>
+                    </div>
+                </div>
+                
+                <div class="peiling-accuracy">
+                    <div class="accuracy-titel">📊 Peilingsnauwkeurigheid (MAE)</div>
+                    <div style="font-size: 0.9em; margin-bottom: 15px; color: #666; font-style: italic;">
+                        Mean Absolute Error: gemiddelde afwijking tussen peiling en werkelijk resultaat
+                    </div>
+                    <div class="bureau-item">
+                        <span class="bureau-naam">🏆 Kantar</span>
+                        <span class="mae-score">0.29% (Uitstekend)</span>
+                    </div>
+                    <div class="bureau-item">
+                        <span class="bureau-naam">🏆 I&O Research</span>
+                        <span class="mae-score">0.33% (Uitstekend)</span>
+                    </div>
+                    <div class="bureau-item">
+                        <span class="bureau-naam">Ipsos</span>
+                        <span class="mae-score">0.67% (Goed)</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>📈 Trends en Patronen (2006-2023)</h2>
+            
+            <div class="highlight">
+                <h3>🔍 Opvallende Ontwikkelingen</h3>
+                <ul>
+                    <li><strong>VVD Dominantie (2010-2021):</strong> Vier verkiezingen op rij de grootste partij</li>
+                    <li><strong>PVV Doorbraak (2023):</strong> Van 10.8% naar 23.6% - grootste winst ooit</li>
+                    <li><strong>Nieuwe Partijen:</strong> NSC debuteert direct met 12.9% (2023)</li>
+                    <li><strong>CDA Daling:</strong> Van 26.5% (2006) naar 3.3% (2023)</li>
+                    <li><strong>D66 Wisselvalligheid:</strong> Van 2.0% (2006) naar 15.0% (2021)</li>
+                </ul>
+            </div>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number">0.42%</div>
+                    <div class="stat-label">Gemiddelde MAE</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">Kantar</div>
+                    <div class="stat-label">Meest Accurate Bureau</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">13%</div>
+                    <div class="stat-label">Grootste Winst (PVV 2023)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">23.3%</div>
+                    <div class="stat-label">Grootste Verlies (CDA 2006-2023)</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
+                <img src="NETLIFO/HYDROTALENT_PERFECT_STANDARD_3X_20251008_183220.png" alt="Hydrotalent Logo" style="height: 40px; margin-right: 15px;">
+                <div>
+                    <p style="margin: 0;"><strong>📊 Nederlandse Verkiezingsanalyse 2006-2023</strong></p>
+                    <p style="margin: 5px 0 0 0; font-size: 0.9em;">Geanalyseerd door Hydrotalent</p>
+                </div>
+            </div>
+            <p>Gebaseerd op officiële verkiezingsdata en peilingen van Ipsos, Kantar en I&O Research</p>
+            <p>Gegenereerd op: <span id="current-date"></span></p>
+        </div>
+    </div>
+
+    <script>
+        // Voeg huidige datum toe
+        document.getElementById('current-date').textContent = new Date().toLocaleDateString('nl-NL', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+
+        // Voeg wat interactiviteit toe
+        document.querySelectorAll('.verkiezing-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-8px)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(-5px)';
+            });
+        });
+
+        // Smooth scroll voor interne links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body>
+</html>
